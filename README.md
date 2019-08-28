@@ -1,5 +1,7 @@
 # The-Sleeping-Barber-Problem-Python
-A sleeping barber implementation done in Python
+A sleeping barber implementation done in Python. Making use of multiprocessors and mulitprocessing.
 
-The Barber doesn't look at the customers in FIFO manner, with the basic Python threading there is no way of doing so. Please review my java version for an idea on how to create a barber shop, in a more fair manner 
+A continous stream of customers can be imitated if you add a while loop to the customer function 
+
+
 
