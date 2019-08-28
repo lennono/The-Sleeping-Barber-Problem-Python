@@ -36,7 +36,7 @@ while True:
 
     time.sleep(random.randint(0, 3)) # Wait for next customer
     global numberOfFreeSeats
-
+    #crack
     # Customer leaves if there is no free seat
     if numberOfFreeSeats > 0:  
         nextCustomer = threading.Thread(target = Customer)
