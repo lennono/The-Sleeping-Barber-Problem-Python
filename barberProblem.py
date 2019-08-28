@@ -13,7 +13,7 @@ def barber(queue):
 def customer(queue):
     queue.put('Work')
     print("customer")
-    # Can put up a while loop here to mimic a continuous 
+    # Can put up a while loop here to mimic a continuous stream of customers
         
 
 
