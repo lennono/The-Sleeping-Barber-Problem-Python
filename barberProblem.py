@@ -1,43 +1,46 @@
 import threading
 import time
 import random
-import Queue
+from multiprocessing import Process, Queue, cpu_count
 # Not a fair solution will need to use a queue
 # Stupid python
-barberReady = threading.Semaphore(value=3)
-customerReady = threading.Semaphore(value=0)
-numberOfFreeSeats = 10 # Atomic variable
-customerQueue = Queue.Queue()
+#barberReady = threading.Semaphore(value=3)
+#customerReady = threading.Semaphore(value=0)
+#numberOfFreeSeats = 10 # Atomic variable
 
-def barber():
-    global numberOfFreeSeats
+def barber(queue):
     while True:
-        customerReady.acquire()
-        print "Barber ", threading.current_thread().name
-        numberOfFreeSeats += 1
-        barberReady.release()
+        queue.get()
+        #customerReady.acquire()
+        print("Barber ")
+        #numberOfFreeSeats += 1
+        #barberReady.release()
         time.sleep(random.randint(2, 17)) # Hair cut time
 
-def Customer():
-        global numberOfFreeSeats
+def customer(queue):
+    queue.put('Work')
 
-        numberOfFreeSeats -= 1
-        customerReady.release() # Customer ready to have a haircut
-        barberReady.acquire() #
-        print "customer ", threading.current_thread().name  
-            
+    print("customer")
+        
 
 
-for x in range(3):
-    barberOpensUp = threading.Thread(target = barber) 
-    barberOpensUp.start() 
+class Manager:
+    def __init__(self):
+        self.queue = Queue()
+        self.NUMBER_OF_PROCESSES = cpu_count()
 
-while True:
+    def start(self):
+        self.workers = [Process(target=customer, args=(self.queue,)) for i in range(self.NUMBER_OF_PROCESSES)]
+        for w in self.workers:
+            w.start()
 
-    time.sleep(random.randint(0, 3)) # Wait for next customer
-    global numberOfFreeSeats
-    #crack
-    # Customer leaves if there is no free seat
-    if numberOfFreeSeats > 0:  
-        nextCustomer = threading.Thread(target = Customer)
-        nextCustomer.start()
+        barber(self.queue)
+
+    def stop(self):
+        self.queue.put(None)
+        for i in range(self.NUMBER_OF_PROCESS):
+            self.workers[i].join()
+        self.queue.close()
+
+
+Manager().start()
