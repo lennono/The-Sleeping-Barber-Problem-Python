@@ -7,14 +7,14 @@ from multiprocessing import Process, Queue, cpu_count
 def barber(queue):
     while True:
         queue.get()
-        print("Barber ")
-        time.sleep(random.randint(2, 17)) # Hair cut time
+        print("Barber is cutting hair")
+        time.sleep(random.randint(10, 25)) # Hair cut time
 
 def customer(queue):
-    queue.put('Work')
-    print("customer")
-    # Can put up a while loop here to mimic a continuous stream of customers
-        
+	while True:
+	    print("Customer in waiting room")
+	    queue.put('Work')
+	    time.sleep(random.randint(1, 3)) # wait for new customer to come in 
 
 
 class Manager:
@@ -23,11 +23,11 @@ class Manager:
         self.NUMBER_OF_PROCESSES = cpu_count()
 
     def start(self):
-        self.workers = [Process(target=customer, args=(self.queue,)) for i in range(self.NUMBER_OF_PROCESSES)]
+        self.workers = [Process(target=barber, args=(self.queue,)) for i in range(self.NUMBER_OF_PROCESSES)]
         for w in self.workers:
             w.start()
 
-        barber(self.queue)
+        customer(self.queue)
 
     def stop(self):
         self.queue.put(None)
